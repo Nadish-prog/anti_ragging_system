@@ -27,6 +27,7 @@ import AdminDashboard from '../pages/admin/AdminDashboard'
 import AllReports from '../pages/admin/AllReports'
 import AdminReportDetails from '../pages/admin/AdminReportDetails'
 import AdminAnalytics from '../pages/admin/AdminAnalytics'
+import ManageUsers from '../pages/admin/ManageUsers'
 
 export default function AppRoutes() {
   return (
@@ -62,6 +63,7 @@ export default function AppRoutes() {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="reports" element={<AllReports />} />
             <Route path="reports/:id" element={<AdminReportDetails />} />
+            <Route path="users" element={<ManageUsers />} />
             <Route path="analytics" element={<AdminAnalytics />} />
             <Route path="profile" element={<Profile />} />
           </Route>

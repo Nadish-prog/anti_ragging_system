@@ -37,6 +37,8 @@ model complaints {
   created_at                                  DateTime?           @default(now()) @db.Timestamp(6)
   updated_at                                  DateTime?           @default(now()) @db.Timestamp(6)
   is_anonymous                                Boolean?            @default(false)
+  same_gender_staff                           Boolean?            @default(false)
+  idempotency_key                             String?             @unique @db.VarChar(100)
   incident_type_id                            Int
   complaint_accused                           complaint_accused[]
   complaint_logs                              complaint_logs[]
@@ -88,6 +90,7 @@ model users {
   department_id                                    Int?
   created_at                                       DateTime?        @default(now()) @db.Timestamp(6)
   phone_no                                         String?          @db.VarChar(15)
+  gender_id                                        Int?
   roll_no                                          String?          @unique @db.VarChar(50)
   faculty_code                                     String?          @unique @db.VarChar(50)
   year                                             Int?
@@ -95,9 +98,16 @@ model users {
   complaints_complaints_assigned_faculty_idTousers complaints[]     @relation("complaints_assigned_faculty_idTousers")
   complaints_complaints_student_idTousers          complaints[]     @relation("complaints_student_idTousers")
   departments                                      departments?     @relation(fields: [department_id], references: [department_id], onDelete: NoAction, onUpdate: NoAction)
+  genders                                          genders?         @relation(fields: [gender_id], references: [gender_id], onDelete: NoAction, onUpdate: NoAction)
   roles                                            roles            @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([role_id], map: "idx_users_role")
+}
+
+model genders {
+  gender_id   Int     @id @default(autoincrement())
+  gender_name String  @unique @db.VarChar(20)
+  users       users[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.

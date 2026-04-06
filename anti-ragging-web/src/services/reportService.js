@@ -12,13 +12,15 @@ const mapComplaint = (c) => {
     severity: c.severity_levels?.level_name,
     incidentType: c.incident_types?.type_name || c.incident_type,
     isAnonymous: c.is_anonymous,
+    same_gender_staff: c.same_gender_staff,
     student: c.student_info || c.users_complaints_student_idTousers ? {
       name: c.student_info?.full_name || c.users_complaints_student_idTousers?.full_name,
       email: c.student_info?.email || c.users_complaints_student_idTousers?.email || '',
       phone: c.student_info?.phone_no || c.users_complaints_student_idTousers?.phone_no || '',
       rollNo: c.student_info?.roll_no || c.users_complaints_student_idTousers?.roll_no || '',
       departmentId: c.student_info?.department_id || c.users_complaints_student_idTousers?.department_id || '',
-      year: c.student_info?.year || c.users_complaints_student_idTousers?.year || ''
+      year: c.student_info?.year || c.users_complaints_student_idTousers?.year || '',
+      gender: c.student_info?.genders?.gender_name || c.users_complaints_student_idTousers?.genders?.gender_name || ''
     } : null,
     faculty: c.assigned_faculty || c.users_complaints_assigned_faculty_idTousers ? {
         name: c.assigned_faculty?.name || c.users_complaints_assigned_faculty_idTousers?.full_name,
@@ -43,6 +45,10 @@ const mapComplaint = (c) => {
 export const reportService = {
   // Common/Student endpoints
   createReport: async (reportData) => {
+    const idempotencyKey = window.crypto && window.crypto.randomUUID 
+      ? window.crypto.randomUUID() 
+      : Date.now().toString(36) + Math.random().toString(36).substr(2);
+
     // Backend expects JSON: title, description, incident_type_id, location, incident_date, parties_involved, is_anonymous
     const payload = {
       title: reportData.title,
@@ -51,9 +57,14 @@ export const reportService = {
       incident_date: reportData.incidentDate || null,
       incident_type_id: parseInt(reportData.incidentTypeId),
       is_anonymous: reportData.isAnonymous || false,
+      same_gender_staff: reportData.same_gender_staff || false,
       parties_involved: reportData.partiesInvolved || []
     }
-    const response = await api.post('/complaints', payload)
+    const response = await api.post('/complaints', payload, {
+      headers: {
+        'X-Idempotency-Key': idempotencyKey
+      }
+    })
     return response.data
   },
 
@@ -160,9 +171,10 @@ export const reportService = {
     }
   },
   
-  getFacultyMembers: async () => {
+  getFacultyMembers: async (gender = null) => {
     try {
-        const response = await api.get('/users/faculty')
+        const url = gender ? `/users/faculty?gender=${encodeURIComponent(gender)}` : '/users/faculty'
+        const response = await api.get(url)
         const facultyList = response.data.faculty || []
         return { 
           faculty: facultyList.map(f => ({

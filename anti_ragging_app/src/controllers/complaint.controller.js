@@ -12,6 +12,7 @@ exports.createComplaint = async (req, res) => {
       incident_date,
       parties_involved, // Renamed from accused for clarity on the frontend
       is_anonymous,
+      same_gender_staff,
     } = req.body;
 
 
@@ -21,6 +22,19 @@ exports.createComplaint = async (req, res) => {
       return res.status(400).json({
         message: "Title, description and incident type are required",
       });
+    }
+
+    const idempotencyKey = req.headers["x-idempotency-key"];
+    if (idempotencyKey) {
+      const existingComplaint = await prisma.complaints.findUnique({
+        where: { idempotency_key: idempotencyKey }
+      });
+      if (existingComplaint) {
+        return res.status(200).json({
+          message: "Complaint already exists. Returning existing record.",
+          complaint: existingComplaint,
+        });
+      }
     }
 
     const OPEN_STATUS_ID = 1; // assuming OPEN = 1
@@ -37,6 +51,8 @@ exports.createComplaint = async (req, res) => {
           student_id: req.user.user_id,
           status_id: OPEN_STATUS_ID,
           is_anonymous: is_anonymous || false,
+          same_gender_staff: same_gender_staff || false,
+          idempotency_key: idempotencyKey || null,
         },
       });
 
@@ -779,6 +795,9 @@ exports.getComplaintById = async (req, res) => {
             department_id: true,
             phone_no: true,
             email: true,
+            genders: {
+              select: { gender_name: true },
+            },
           },
         },
 

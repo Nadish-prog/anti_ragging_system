@@ -20,6 +20,7 @@ export const authService = {
       roll_no: userData.roll_no,
       faculty_code: userData.faculty_code,
       year: userData.year,
+      gender_id: userData.gender ? parseInt(userData.gender, 10) : null,
     }
     const response = await api.post('/auth/register', payload)
     return response.data

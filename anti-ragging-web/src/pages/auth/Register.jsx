@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Shield } from 'lucide-react'
 import { authService } from '../../services/authService'
 import { useAuth } from '../../context/AuthContext'
 import { getRoleRedirectPath } from '../../utils/roleRedirect'
@@ -19,6 +20,7 @@ export default function Register() {
     roll_no: '',
     faculty_code: '',
     year: '',
+    gender: '', // default empty
     role: 'student' // default
   })
 
@@ -61,22 +63,31 @@ export default function Register() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <div className="flex flex-col justify-center flex-1 w-full max-w-md px-6 py-12 pb-24 mx-auto lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-3xl font-bold tracking-tight text-center text-gray-900 font-display text-balance">
+    <div className="flex min-h-screen bg-gray-50 font-sans">
+      <div className="flex flex-col justify-center flex-1 w-full max-w-2xl px-6 py-12 pb-24 mx-auto sm:px-12 lg:px-16">
+        <div className="flex items-center justify-center gap-3 mb-10">
+          <Shield className="w-10 h-10 text-blue-600 drop-shadow-md" />
+          <span className="text-2xl font-bold tracking-tight text-gray-900 font-display">SafeCampus</span>
+        </div>
+
+        <div className="text-center">
+          <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 font-display mb-3">
             Create an Account
           </h2>
-          <p className="mt-2 text-sm text-center text-gray-600">
-            Join the Anti-Ragging platform
+          <p className="text-base text-gray-500 mb-8">
+            Join the Anti-Ragging platform. Fill out the details below to complete your registration.
           </p>
         </div>
 
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="px-8 py-10 bg-white border border-gray-100 shadow-xl rounded-2xl shadow-gray-200/50">
-            <ErrorMessage message={error} className="mb-6" />
-            
-            <form className="space-y-5" onSubmit={handleSubmit}>
+        <div className="bg-white/80 backdrop-blur-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-8 sm:p-10 relative overflow-hidden">
+          {/* Subtle gradient blob background */}
+          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-40 h-40 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+
+          <ErrorMessage message={error} className="mb-6 relative z-10" />
+          
+          <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <InputField
                 label="Full Name"
                 id="name"
@@ -90,7 +101,7 @@ export default function Register() {
               />
 
               <InputField
-                label="Email address"
+                label="Email Address"
                 id="email"
                 name="email"
                 type="email"
@@ -100,7 +111,9 @@ export default function Register() {
                 value={formData.email}
                 onChange={handleChange}
               />
-              
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <InputField
                 label="Password"
                 id="password"
@@ -123,7 +136,9 @@ export default function Register() {
                 value={formData.phone_no}
                 onChange={handleChange}
               />
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <SelectField
                 label="Department"
                 id="department_id"
@@ -135,19 +150,37 @@ export default function Register() {
               />
 
               <SelectField
-                label="Role Registration"
-                id="role"
-                name="role"
+                label="Gender"
+                id="gender"
+                name="gender"
                 required
-                value={formData.role}
+                value={formData.gender}
                 onChange={handleChange}
                 options={[
-                  { value: 'student', label: 'Student' },
-                  { value: 'faculty', label: 'Faculty' },
-                  { value: 'admin', label: 'Admin (System use only)' } // Might need to be removed in prod
+                  { value: '', label: 'Select Gender' },
+                  { value: '1', label: 'Male' },
+                  { value: '2', label: 'Female' },
+                  { value: '3', label: 'Other' }
                 ]}
               />
+            </div>
 
+            <div className="pt-2 border-t border-gray-100" />
+
+            <SelectField
+              label="Account Type"
+              id="role"
+              name="role"
+              required
+              value={formData.role}
+              onChange={handleChange}
+              options={[
+                { value: 'student', label: 'Student' },
+                { value: 'faculty', label: 'Faculty' }
+              ]}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end transition-all">
               {formData.role === 'student' && (
                 <>
                   <InputField
@@ -159,6 +192,7 @@ export default function Register() {
                     placeholder="E.g., CS2023001"
                     value={formData.roll_no}
                     onChange={handleChange}
+                    className="mb-0"
                   />
                   <SelectField
                     label="Year of Study"
@@ -167,6 +201,7 @@ export default function Register() {
                     required
                     value={formData.year}
                     onChange={handleChange}
+                    className="mb-0"
                     options={[
                       { value: '', label: 'Select Year' },
                       { value: '1', label: '1st Year' },
@@ -178,35 +213,39 @@ export default function Register() {
                 </>
               )}
 
-              {(formData.role === 'faculty' || formData.role === 'admin') && (
-                <InputField
-                  label="Faculty/Admin ID"
-                  id="faculty_code"
-                  name="faculty_code"
-                  type="text"
-                  required
-                  placeholder="E.g., FAC2023001"
-                  value={formData.faculty_code}
-                  onChange={handleChange}
-                />
+              {formData.role === 'faculty' && (
+                <div className="col-span-2">
+                  <InputField
+                    label="Faculty ID Code"
+                    id="faculty_code"
+                    name="faculty_code"
+                    type="text"
+                    required
+                    placeholder="E.g., FAC2023001"
+                    value={formData.faculty_code}
+                    onChange={handleChange}
+                    className="mb-0"
+                  />
+                </div>
               )}
-
-              <div className="pt-2">
-                <Button type="submit" fullWidth isLoading={loading}>
-                  Create Account
-                </Button>
-              </div>
-            </form>
-
-            <div className="mt-6 text-center text-sm">
-              <span className="text-gray-500">Already have an account? </span>
-              <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-500 transition-colors">
-                Sign in instead
-              </Link>
             </div>
+
+            <div className="pt-6">
+              <Button type="submit" fullWidth isLoading={loading} className="py-3 text-lg shadow-lg hover:shadow-xl transition-all">
+                Create Secure Account
+              </Button>
+            </div>
+          </form>
+
+          <div className="mt-8 text-center bg-gray-50/50 p-4 rounded-xl relative z-10 border border-gray-100">
+            <span className="text-gray-500 font-medium text-sm">Already have an account? </span>
+            <Link to="/login" className="font-bold text-blue-600 hover:text-blue-500 transition-colors ml-1">
+              Sign in securely
+            </Link>
           </div>
         </div>
       </div>
+
     </div>
   )
 }

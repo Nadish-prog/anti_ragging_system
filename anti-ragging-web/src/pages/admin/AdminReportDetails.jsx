@@ -208,6 +208,18 @@ export default function AdminReportDetails() {
               )}
             </div>
 
+            {report.same_gender_staff && (
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-xl shadow-sm mb-6">
+                <p className="text-sm font-semibold text-blue-900">
+                  <AlertOctagon className="inline-block w-4 h-4 mr-1 mb-0.5" />
+                  Same Gender Staff Requested
+                </p>
+                <p className="text-xs text-blue-700 mt-1">
+                  The student has opted for an investigator of the same gender ({report.student?.gender || 'Unknown'}). Only matching faculty are available for assignment.
+                </p>
+              </div>
+            )}
+
             <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 relative">
                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 border-b border-gray-200 pb-2 flex justify-between items-center">
                  Complainant
@@ -266,6 +278,8 @@ export default function AdminReportDetails() {
           onClose={() => setIsModalOpen(false)} 
           reportId={report.id}
           onAssignSuccess={fetchDetail}
+          sameGenderStaff={report.same_gender_staff}
+          studentGender={report.student?.gender}
         />
       )}
 
@@ -314,7 +328,6 @@ export default function AdminReportDetails() {
                     { value: '1', label: 'LOW' },
                     { value: '2', label: 'MEDIUM' },
                     { value: '3', label: 'HIGH' },
-                    { value: '4', label: 'CRITICAL' },
                   ]}
                   value={rejectSeverity}
                   onChange={(e) => setRejectSeverity(e.target.value)}

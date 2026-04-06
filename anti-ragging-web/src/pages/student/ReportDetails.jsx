@@ -97,7 +97,7 @@ export default function ReportDetails() {
               {report.accused && report.accused.length > 0 ? (
                 <ul className="list-disc list-inside text-gray-700">
                   {report.accused.map((person, idx) => (
-                    <li key={idx}>{person.name}</li>
+                    <li key={idx}>{person.accused_name || person.name}</li>
                   ))}
                 </ul>
               ) : (

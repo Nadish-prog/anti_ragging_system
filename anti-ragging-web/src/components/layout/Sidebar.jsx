@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import { Shield, Home, FileText, User, PlusCircle, LogOut, FileSearch, BarChart3 } from 'lucide-react'
+import { Shield, Home, FileText, User, Users, PlusCircle, LogOut, FileSearch, BarChart3 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
 export const Sidebar = ({ isOpen, setisOpen }) => {
@@ -21,6 +21,7 @@ export const Sidebar = ({ isOpen, setisOpen }) => {
     admin: [
       { name: 'Dashboard', href: '/admin/dashboard', icon: Home },
       { name: 'All Reports', href: '/admin/reports', icon: FileText },
+      { name: 'Manage Users', href: '/admin/users', icon: Users },
       { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
       { name: 'Profile', href: '/admin/profile', icon: User },
     ]

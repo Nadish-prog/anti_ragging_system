@@ -7,4 +7,8 @@ router.get("/search", requireAuth, userController.searchUsers);
 
 router.get("/faculty", requireAuth, requireRole("ADMIN"), userController.getFacultyMembers);
 
+router.get("/", requireAuth, requireRole("ADMIN"), userController.getAllUsers);
+
+router.post("/:id/reset-password", requireAuth, requireRole("ADMIN"), userController.resetUserPassword);
+
 module.exports = router;

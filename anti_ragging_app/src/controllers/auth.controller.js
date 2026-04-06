@@ -5,10 +5,14 @@ const { sendEmail, getEmailTemplate } = require("../utils/emailService");
 
 exports.register = async (req, res) => {
   try {
-    const { full_name, email, password, role_id, department_id, phone_no, roll_no, faculty_code, year } = req.body;
+    const { full_name, email, password, role_id, department_id, phone_no, roll_no, faculty_code, year, gender_id } = req.body;
 
-    if (!full_name || !email || !password || !role_id) {
-      return res.status(400).json({ message: "Missing required fields" });
+    if (!full_name || !email || !password || !role_id || !gender_id) {
+      return res.status(400).json({ message: "Missing required fields (including gender)" });
+    }
+
+    if (role_id === 3) {
+      return res.status(403).json({ message: "Admin registration is prohibited" });
     }
 
     const existingUser = await prisma.users.findUnique({
@@ -29,6 +33,7 @@ exports.register = async (req, res) => {
         role_id,
         department_id,
         phone_no: phone_no || null,
+        gender_id: gender_id || null,
         roll_no: roll_no || null,
         faculty_code: faculty_code || null,
         year: year ? parseInt(year, 10) : null,

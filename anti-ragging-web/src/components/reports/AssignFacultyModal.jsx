@@ -6,7 +6,7 @@ import { SelectField } from '../../components/forms/SelectField'
 import { ErrorMessage } from '../../components/ui/ErrorMessage'
 import toast from 'react-hot-toast'
 
-export const AssignFacultyModal = ({ isOpen, onClose, reportId, onAssignSuccess }) => {
+export const AssignFacultyModal = ({ isOpen, onClose, reportId, onAssignSuccess, sameGenderStaff, studentGender }) => {
   const [facultyList, setFacultyList] = useState([])
   const [selectedFaculty, setSelectedFaculty] = useState('')
   const [selectedSeverity, setSelectedSeverity] = useState('')
@@ -23,7 +23,8 @@ export const AssignFacultyModal = ({ isOpen, onClose, reportId, onAssignSuccess 
   const fetchFaculty = async () => {
     try {
       setLoading(true)
-      const data = await reportService.getFacultyMembers()
+      const genderFilter = sameGenderStaff ? studentGender : null;
+      const data = await reportService.getFacultyMembers(genderFilter)
       const list = Array.isArray(data) ? data : (data.faculty || data.users || [])
       // Filter if necessary or just map
       setFacultyList(list.map(f => ({ value: f.id.toString(), label: `${f.name} (${f.email})` })))
@@ -100,7 +101,6 @@ export const AssignFacultyModal = ({ isOpen, onClose, reportId, onAssignSuccess 
                 { value: '1', label: 'LOW' },
                 { value: '2', label: 'MEDIUM' },
                 { value: '3', label: 'HIGH' },
-                { value: '4', label: 'CRITICAL' },
               ]}
               value={selectedSeverity}
               onChange={(e) => setSelectedSeverity(e.target.value)}

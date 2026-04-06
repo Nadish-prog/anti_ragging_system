@@ -16,7 +16,8 @@ export default function CreateReport() {
     location: '',
     incidentTypeId: '',
     partiesInvolved: '',
-    isAnonymous: false
+    isAnonymous: false,
+    same_gender_staff: false
   })
   
   const [evidenceFile, setEvidenceFile] = useState(null)
@@ -201,6 +202,17 @@ export default function CreateReport() {
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <span className="text-sm font-medium text-gray-900">Submit Anonymously</span>
+            </label>
+
+            <label className="flex items-center gap-2 mb-4 hover:cursor-pointer">
+              <input 
+                type="checkbox" 
+                name="same_gender_staff"
+                checked={formData.same_gender_staff}
+                onChange={handleChange}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span className="text-sm font-medium text-gray-900">Opt for staff of same gender for investigation</span>
             </label>
 
             <div className="pt-4 flex items-center justify-end border-t border-gray-100 gap-3">
